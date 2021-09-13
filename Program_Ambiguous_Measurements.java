@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Program_Ambiguous_Measurements {
+class Program {
 
 	/*
 		THOUGHT PROCESS : 
@@ -21,6 +21,21 @@ class Program_Ambiguous_Measurements {
 		Is there a greedy strategy here too ( measure lowest amount to start of with! ) 
 		Seems a possibility. Sometimes we do see greedy and recursion well paired!
 		Reminds me of the coin / break change problem a bit BUT perhaps entailed with a slight modification too
+		Can try half of each range too, I guess?
+		Either you are exactly WITHIN the range, or equal to the range, BUT never greater than the range in either directio
+		
+		
+		Complexity
+		Time = 
+		Space = 
+		
+		Edge Case Testing
+		(a) [[200,210],[450,465],[800,850]], 2100, 2300
+		(b) [[]], ___, ___
+		(c) [[]], ___, ___
+		(d) [[]], ___, ___
+		(e) [[]], ___, ___
+		(f) [[]], ___, ___
 		
 		
 		
