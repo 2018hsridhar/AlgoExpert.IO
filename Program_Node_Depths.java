@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Program_Node_Depths {
+class Program {
 
 	
 	// This is the recursive approach : typically either head-recursion or tail-recursion
@@ -33,11 +33,23 @@ class Program_Node_Depths {
 		}
     return sum;
   }
-  
-  
-  
-  
-  import java.util.*;
+
+  static class BinaryTree {
+    int value;
+    BinaryTree left;
+    BinaryTree right;
+
+    public BinaryTree(int value) {
+      this.value = value;
+      left = null;
+      right = null;
+    }
+  }
+}
+
+
+
+import java.util.*;
 
 
 /*
@@ -86,20 +98,6 @@ class Program {
 		return root.value;
 	}
 	
-
-  static class BinaryTree {
-    int value;
-    BinaryTree left;
-    BinaryTree right;
-
-    public BinaryTree(int value) {
-      this.value = value;
-      left = null;
-      right = null;
-    }
-  }
-}
-
 
   static class BinaryTree {
     int value;
