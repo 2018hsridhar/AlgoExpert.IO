@@ -27,13 +27,26 @@ Edge Case Testing :
 
 
 */
-import java.util.*
 
-Rectangular Matri(F)
-	(G)
-	
-  public static int[] searchInSortedMatrix(int[][] matrix, int target) {
-    // Write your code here.
-    return new int[] {-1, -1};
+// Solution 1 - The Brute Force Case
+import java.util.*;
+
+class Program
+{
+  public static int[] searchInSortedMatrix(int[][] matrix, int target) 
+  {
+	int m = matrix.length;
+	int n = matrix[0].length;
+	for(int i = 0; i < m; ++i)
+	{
+		for(int j = 0; j < n; ++j)
+		{
+			if(matrix[i][j] == target)
+			{
+				return new int[]{i,j};
+			}
+		}
+	}
+	return new int[] {-1, -1};
   }
 }
