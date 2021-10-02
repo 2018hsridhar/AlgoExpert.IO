@@ -74,59 +74,23 @@ class Program {
 		int n = arrayTwo.length;
 		int ptr1 = 0;
 		int ptr2 = 0;
-		int wIdx = 0;
-		int[] merged = new int[m+n];
-		boolean[] inArrOne = new boolean[m+n]; 
 		while(ptr1 < m && ptr2 < n)
 		{
 			int val_one = arrayOne[ptr1];
 			int val_two = arrayTwo[ptr2];
-			if(val_one <= val_two)
-			{
-				merged[wIdx++] = arrayOne[ptr1++];
-				inArrOne[wIdx-1] = true;
-			}
-			else			
-			{
-				merged[wIdx++] = arrayTwo[ptr2++];
-				inArrOne[wIdx-1] = false;
-			}
-			}
-		while(ptr1 < m)
-		{
-			merged[wIdx++] = arrayOne[ptr1++];
-			inArrOne[wIdx-1] = true;
-		}
-		while(ptr2 < n)
-		{
-			merged[wIdx++] = arrayTwo[ptr2++];
-			inArrOne[wIdx-1] = false;
-		}
-		
-		// Numbers must match up to their ORIGINAL positinos in the array as well ... DANG!
-		
-		for(int i = 0; i < merged.length-1; ++i)
-		{
-			int absDist = getAbsoluteDist(merged[i], merged[i+1]);
-			// System.out.printf("For (%d,%d), absDist = %d \t minDist = %d\n", merged[i], merged[i+1], absDist, minDist);
-			// System.out.printf("For (%d,%d), inArrOne = (%s,%s)\n", merged[i], merged[i+1], inArrOne[i], inArrOne[i+1]);
+			int absDist = getAbsoluteDist(val_one, val_two);
 			if(absDist < minDist)
 			{
-				if(inArrOne[i] == true && inArrOne[i+1] == false)
-				{
-					minDiffPair[0] = merged[i];
-					minDiffPair[1] = merged[i+1];
+					minDiffPair[0] = val_one;
+					minDiffPair[1] = val_two;
 					minDist = absDist;
-				}
-				else if (inArrOne[i+1] && !inArrOne[i])
-				{
-					minDiffPair[0] = merged[i+1];
-					minDiffPair[1] = merged[i];
-					minDist = absDist;
-				}
 			}
+			if(val_one <= val_two)
+				++ptr1;
+			else			
+				++ptr2;
 		}
-
+		
 		return minDiffPair;
   }
 	
