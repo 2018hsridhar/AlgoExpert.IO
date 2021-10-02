@@ -16,8 +16,12 @@ Space = O(1)
 
 More efficient
 Consider a sort function here?
-Time = O(N+M)? or O(NlogN)/O(MlogM) <= why NOT maximize both of these instead?
-Space = O(N+M)? or O(1)?
+{} = performance for both merge sort operations
+Time = {O(NlogN) +O(MlogM)} + O(N+M)
+Space = O(N+M) + {O(M) + O(N)}
+
+Time = MAX{O(NlogN), O(MlogM)} + O(N+M)
+Space = O(1) [ assume merge sort is in-place here! ] 
 
 Edge cases : 
 (A)
@@ -35,8 +39,9 @@ B =			 [4,17,   26,134,135]
 {20,17}
 are incredibly close pairs here. 
 What if we combined both outputs ( e.g. a merge sort operation )?
-C = merge(A,B) = [-1,3,4,5,10,17,20,26,28,134,135]
+C = merge(A,B) = [-1,3,4,5,10,17,20,26,28,134,135] => merge via a 2 ptr based approach and allocate space of O(M+N) here
 And then we got the min difference between a monotonically non-decreasing array!
+We can kinda be "greedy" here I guess. We know that given (a,b,c), min_diff(a,b,c) = min(diff(a,b),diff(b,c))
 
 
 Can we pair it up in this manner ( performs binary searching here ) ?
@@ -67,20 +72,61 @@ class Program {
 		int minDist = Integer.MAX_VALUE;
 		int m = arrayOne.length;
 		int n = arrayTwo.length;
-		for(int i = 0; i < m; ++i)
+		int ptr1 = 0;
+		int ptr2 = 0;
+		int wIdx = 0;
+		int[] merged = new int[m+n];
+		boolean[] inArrOne = new boolean[m+n]; 
+		while(ptr1 < m && ptr2 < n)
 		{
-			for(int j = 0; j < n; ++j)
+			int val_one = arrayOne[ptr1];
+			int val_two = arrayTwo[ptr2];
+			if(val_one <= val_two)
 			{
-				int absDist = getAbsoluteDist(arrayOne[i], arrayTwo[j]);
-				if(absDist < minDist)
+				merged[wIdx++] = arrayOne[ptr1++];
+				inArrOne[wIdx-1] = true;
+			}
+			else			
+			{
+				merged[wIdx++] = arrayTwo[ptr2++];
+				inArrOne[wIdx-1] = false;
+			}
+			}
+		while(ptr1 < m)
+		{
+			merged[wIdx++] = arrayOne[ptr1++];
+			inArrOne[wIdx-1] = true;
+		}
+		while(ptr2 < n)
+		{
+			merged[wIdx++] = arrayTwo[ptr2++];
+			inArrOne[wIdx-1] = false;
+		}
+		
+		// Numbers must match up to their ORIGINAL positinos in the array as well ... DANG!
+		
+		for(int i = 0; i < merged.length-1; ++i)
+		{
+			int absDist = getAbsoluteDist(merged[i], merged[i+1]);
+			// System.out.printf("For (%d,%d), absDist = %d \t minDist = %d\n", merged[i], merged[i+1], absDist, minDist);
+			// System.out.printf("For (%d,%d), inArrOne = (%s,%s)\n", merged[i], merged[i+1], inArrOne[i], inArrOne[i+1]);
+			if(absDist < minDist)
+			{
+				if(inArrOne[i] == true && inArrOne[i+1] == false)
 				{
-					minDiffPair[0] = arrayOne[i];
-					minDiffPair[1] = arrayTwo[j];
+					minDiffPair[0] = merged[i];
+					minDiffPair[1] = merged[i+1];
+					minDist = absDist;
+				}
+				else if (inArrOne[i+1] && !inArrOne[i])
+				{
+					minDiffPair[0] = merged[i+1];
+					minDiffPair[1] = merged[i];
 					minDist = absDist;
 				}
 			}
 		}
-		
+
 		return minDiffPair;
   }
 	
