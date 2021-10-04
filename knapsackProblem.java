@@ -55,12 +55,14 @@ Return the current values as well
 Sure - indies don't have to be ordered, BUT, still not intuitive to cache
 	helper(items, capacity, value, indices)
 Take out a parameter, and in lieu, model it as a head recursive equation instead
+Might have to return a List<List<Integer>> : ok this is just getting annoying
+
 	
 	helper(items, 10,{})
 	Max{
 		1 + helper(items,8.{0})
 		4 + helper(items,7,{1})
-		5 + helper(items,4,{2)
+		5 + helper(items,4,{2})
 		6 + helper(items,3,{3})
 					MAX
 					{
@@ -82,4 +84,98 @@ Edge case Testing :
 So DP needs following memory requirements : 
 (a) An array of List<Integers> for indices optimzed per value
 (b) An array of ints for indices corresponding to their target capacities
+
+Also remember - this is [0/1] knapsack : not an infinite number of each (value,weight) pairing!
+Consider a set -> key removal/key insertion be quick here
+
+
+import java.util.*;
+
+class Program {
+	public static List<Integer> maxValList;
+	public static int maxValue;
+	public static List<Integer> maxIndices;
+	
+  public static List<List<Integer>> knapsackProblem(int[][] items, int capacity) 
+	{
+		// [1] initialize globals to update -> max value and its indices
+		maxIndices = new ArrayList<Integer>();
+		maxValue = 0;
+		maxValList = new ArrayList<Integer>();
+		
+		// [2] Set up initial used Items ( all zeroes ) and initial index set ( an empty list ) 
+		// Invoke root recursive call here
+		int n = items.length;
+		int[] usedItems = new int[n];
+		for(int i = 0; i < n; ++i)
+			usedItems[i] = 0;
+		List<Integer> indices = new ArrayList<Integer>();
+		helper(items, usedItems, capacity, 0, indices);
+
+		// [3] Add information to list ending here
+		List<List<Integer>> result = new ArrayList<List<Integer>>();
+		maxValList.add(maxValue);
+		result.add(maxValList);
+		result.add(maxIndices);
+    return result;
+  }
+	
+	public static void helper(int[][] items, int[] usedItems, int capacity, int value, List<Integer> indices)
+	{
+		if(capacity < 0)
+		{
+			return;
+		}
+		else if ( capacity == 0)
+		{
+			if(value > maxValue)
+			{
+				maxValue = value;
+				maxIndices = indices;
+				return;
+			}
+		}
+		else
+		{
+			int numItems = items.length;
+			for(int i = 0; i < numItems; ++i)
+			{
+				int[] item = items[i];
+				int curValue = item[0];
+				int curWeight = item[1];
+				if(usedItems[i] == 0)
+				{
+					int reducedCapacity = capacity - curWeight;
+					if(reducedCapacity < 0)
+					{
+						// check current state ( as it might be locally good enough ) 
+						if(value > maxValue)
+						{
+							maxValue = value;
+							maxIndices = indices;
+							return;
+						}
+					}
+					else
+					{
+						int nextValue = value + curValue;
+						// Iterate over children -> engender another used items list, per child ( ref to figure ) 
+						int[] reducedItems = new int[numItems];
+						for(int j = 0; j < numItems; ++j)
+							reducedItems[j] = usedItems[j];
+						reducedItems[i] = 1;
+						List<Integer> nextIndices = new LinkedList<Integer>();
+						for(Integer el : indices)
+							nextIndices.add(el);
+						nextIndices.add(i);
+						helper(items, reducedItems, reducedCapacity, nextValue, nextIndices);
+					}
+				}
+			}	
+		}
+		return;
+	}
+	
+}
+
 
