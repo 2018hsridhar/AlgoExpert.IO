@@ -68,7 +68,8 @@ class Program {
 
 /*
 https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html
-
+Challenge : Can we do this as an iterator, and if so, what do we need to account for?
+Can we perform this in only one pass with add/removes as well?
 */
 
 import java.util.*;
