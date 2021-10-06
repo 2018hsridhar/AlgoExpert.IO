@@ -64,3 +64,36 @@ class Program {
     return array;
   }
 }
+
+
+/*
+https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html
+
+*/
+
+import java.util.*;
+
+// No support for using Iterator-based syntax : remove lacks logic for removal at specific indices
+// Or at portions of the SLL
+class Program {
+  public static List<Integer> moveElementToEnd(List<Integer> array, int toMove) 
+	{
+		int count = 0;
+		// This is the type of bug folks WOULD get tripped on ( removal changing sz of the SLL ) 
+		Iterator<Integer> itr = array.iterator();
+		while(itr.hasNext())
+		{
+			int curEl = itr.next();
+			if(curEl == toMove)
+			{
+				itr.remove();
+				++count;
+			}
+		}
+		
+		for(int j = 0; j < count; ++j)
+			array.add(toMove);
+    return array;
+  }
+}
+
