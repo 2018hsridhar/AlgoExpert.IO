@@ -80,3 +80,62 @@ class Program {
 	}
 	
 }
+
+
+/*
+Do NOT worry about boudns messing up here, W.R.T. other target indices in this matrix
+TOP-DOWN memoization solution here now
+
+*/
+
+import java.util.*;
+
+class Program {
+
+	int[][] memo;
+	public int numberOfWaysToTraverseGraph(int width, int height) 
+	{
+		int totalTraversals = 0;
+		memo = new int[width][height];
+		for(int i = 0; i < width; ++i)
+			for(int j = 0; j < height; ++j)
+				memo[i][j] = -1; // indicates no answer here
+		totalTraversals = recurse(0,0, width, height);
+		return totalTraversals;
+  }
+	
+	
+	// Recursion without global pollution
+	// Notice how we decomposed the problem differences here with 1D vs. 2D paths as well
+	// Make sure to hit the memoization caches first B4 executing recurse calls as well
+	private int recurse(int sx, int sy, int tx, int ty)
+	{
+		// [1] In TD memoization, do cache hit ahead of time
+		if(memo[sx][sy] != -1)
+			return memo[sx][sy];
+		
+		// System.out.printf("sx,sy = (%d,%d)\n", sx, sy);
+		int numWays = 0;
+		if(sx == tx-1 && sy==ty-1)
+			memo[sx][sy] = 0;
+		if(sx + 1 < tx && sy + 1 < ty)
+		{
+				numWays += recurse(sx + 1, sy, tx, ty);
+				numWays += recurse(sx, sy+1, tx, ty);		
+				memo[sx][sy] = numWays;
+		}
+		if(sx + 1 < tx && sy + 1 >= ty)
+		{
+			recurse(sx + 1, sy, tx, ty);
+			memo[sx][sy] = 1;
+		}
+		if(sy + 1 < ty && sx + 1 >= tx)
+		{
+			recurse(sx, sy + 1, tx, ty);
+			memo[sx][sy] = 1;
+		}
+		return memo[sx][sy];
+	}
+	
+}
+
