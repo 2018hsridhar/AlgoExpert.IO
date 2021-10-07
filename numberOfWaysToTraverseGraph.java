@@ -139,3 +139,49 @@ class Program {
 	
 }
 
+
+/*
+Do NOT worry about boudns messing up here, W.R.T. other target indices in this matrix
+TOP-DOWN memoization solution here now
+
+*/
+
+import java.util.*;
+
+class Program {
+
+	int[][] DP;
+	public int numberOfWaysToTraverseGraph(int width, int height) 
+	{
+		int totalTraversals = 0;
+		DP = new int[width][height];
+		for(int i = 0; i < width; ++i)
+			for(int j = 0; j < height; ++j)
+				DP[i][j] = -1; // indicates no answer here
+		totalTraversals = bottomUpDP(DP, 0,0, width, height);
+		return totalTraversals;
+  }
+	
+	
+	// Recursion without global pollution
+	// Notice how we decomposed the problem differences here with 1D vs. 2D paths as well
+	// Make sure to hit the memoization caches first B4 executing recurse calls as well
+	private int bottomUpDP(int[][] DP, int sx, int sy, int tx, int ty)
+	{
+		// System.out.printf("sx,sy = (%d,%d)\n", sx, sy);
+		int numWays = 0;
+		DP[0][0] = 0;
+		for(int j = 0; j < ty; ++j)
+			DP[0][j] = 1;
+		for(int i = 0; i < tx; ++i)
+			DP[i][0] = 1;
+		
+		for(int i = 1; i < tx; ++i)
+			for(int j = 1; j < ty; ++j)
+				DP[i][j] = DP[i-1][j] + DP[i][j-1];
+		
+		numWays = DP[tx-1][ty-1];
+		return numWays;
+		
+	}	
+}
