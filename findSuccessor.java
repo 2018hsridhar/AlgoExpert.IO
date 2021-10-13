@@ -43,8 +43,49 @@ class Program {
     }
   }
 
-  public BinaryTree findSuccessor(BinaryTree tree, BinaryTree node) {
-    // Write your code here.
-    return null;
+  public BinaryTree findSuccessor(BinaryTree tree, BinaryTree node) 
+	{
+		BinaryTree successor = null;
+		if(node.left == null && node.right == null)
+		{
+			// check if at root BTW, in case it's a singleton tree
+			if(node.parent == null)
+				return null;
+			if(node.parent != null && node.parent.right != null)
+			{
+				if(node.parent.left != null && node.parent.left.value == node.value)
+					return node.parent;
+			}
+			// Now for the while loop
+			BinaryTree curNode = node;
+			while(curNode.parent != null)
+			{
+				BinaryTree parentNode = curNode.parent;
+				if(parentNode.right.value == curNode.value)
+					curNode = parentNode;
+				else
+					return parentNode; // final parent here
+			}
+			return null;
+		}
+		else
+		{
+			if(node.right == null)
+			{
+				return node.parent;
+			}
+			else	// Need root handling as well here too
+			{
+				BinaryTree curNode = node.right; // default to root case here as well	
+				while(curNode.left != null || curNode.right != null)
+				{
+					if(curNode.left != null)
+						curNode = curNode.left;
+					else
+						return curNode;
+				}
+				return curNode;
+			}
+		}
   }
 }
