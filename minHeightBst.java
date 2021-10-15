@@ -25,6 +25,8 @@ Test Bench
 (H) [1,2,3,4,5,6,7,8,9,10]
 ... can induct from cases of {2,3} here for rest of test bench
 
+https://docs.oracle.com/javase/8/docs/api/java/util/List.html
+
 */
 import java.util.*;
 
@@ -35,9 +37,38 @@ class Program
 	
   public static BST minHeightBst(List<Integer> array) 
 	{
-    // Write your code here.
-    return null;
+		int n = array.size();
+		int[] A = new int[n];
+		Iterator<Integer> itr = array.iterator();
+		int wIdx = 0;
+		while(itr.hasNext())
+			A[wIdx++] = itr.next();
+		
+		BST root = dac(A,0,n-1);;
+    return root;
   }
+	
+	public static BST dac(int[] array, int low, int high)
+	{
+		BST root = null;
+		if(low > high)
+			return null;
+		else if ( low == high)
+		{
+			root = new BST(array[low]);
+		}
+		else
+		{
+			int mid = (low + high) / 2;
+			BST lhs = dac(array, low, mid - 1);
+			BST rhs = dac(array, mid + 1, high);
+			root = new BST(array[mid]);
+			root.left = lhs;
+			root.right = rhs;
+		}
+		return root;
+	}
+	
 
   static class BST {
     public int value;
