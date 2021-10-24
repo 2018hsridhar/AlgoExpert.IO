@@ -50,9 +50,9 @@ Let M,N := dimensions of board
 Let H := length longest string in words
 Let W := number of words in the input
 Assuming that the input is NOT sorted
-TIME = O(W*(2*MN)) = O(WMN)
-	start = O(MN), expl = O(MN)
-SPACE = O(H) + O(MN) + O(H) = O(MN) + O(H)
+TIME = O(W*(2*MN)) = O(W*(MN)^2)
+	dfs = O(MN), expl = O(MN)
+SPACE = O(H) + O(MN) + O(H) = O(MN) + O(min(H,MN)) where H := len(longest_word)
 
 Modularization makes reasoning of Big-O easier as well
 * Clement's solution utilizes a trie underneath, and therefore, their TS reasoning will differ substantially
