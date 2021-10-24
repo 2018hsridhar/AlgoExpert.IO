@@ -6,6 +6,9 @@
  Connect adjacent ( hoz,vert,diag) letters - do not use a letter more than once though at a given position
  Words can have duplicate letters, BUT, they must originate from elsewhere in said board
  >= 2 words can overlap and use the same letters
+ Attempt @ confusion : general thinking is the words are [a-z]. they can include numbers and other symbols
+ 	-> can not always mark entries in the board with a symbol for own visition ( e.g. X or -1 ) 
+	-> hence, you need a seperate board object ( boolean for ease ) 
 
 (4x4)
 TEST BENCH 
@@ -19,7 +22,9 @@ TEST BENCH
 (D) [["t","h","i","s"], ["o","a","o","a"],["t","m","t","h"],["e","b","a","d"]]
 	 ["song","slme"]
 	 []
- (E)
+ (E) [["a", "b", "c", "c"]]
+ 	["a","ab","bcd","abcd"]
+(F)
  [
   ["t", "h", "i", "s", "i", "s", "a"],
   ["s", "i", "m", "p", "l", "e", "x"],
@@ -47,7 +52,9 @@ Let W := number of words in the input
 Assuming that the input is NOT sorted
 TIME = O(W*(2*MN)) = O(WMN)
 	start = O(MN), expl = O(MN)
-SPACE = O(H)
+SPACE = O(H) + O(MN) + O(H) = O(MN) + O(H)
+
+Modularization makes reasoning of Big-O easier as well
 
 */
 import java.util.*;
@@ -56,6 +63,87 @@ class Program
 {
   public static List<String> boggleBoard(char[][] board, String[] words) 
 	{
-    return new ArrayList<String>();
+    List<String> found = playBoggle(board,words);
+		return found;
+	}
+	
+	// Seperation : Discovery of start position from the actual dfs call
+	private static List<String> playBoggle(char[][] board, String[] words)
+	{
+		List<String> found = new ArrayList<String>();
+		int m = board.length;
+		int n = board[0].length;
+		int[][] visited = new int[m][n]; // because IDK if bools initialize to false or true, but ints always 0-init
+		Set<String> encount = new HashSet<String>();
+		for(String token : words)
+		{
+			for(int i = 0; i < m; ++i)
+			{
+				for(int j = 0; j < n; ++j)
+				{
+					if(board[i][j] == token.charAt(0))
+					{
+						if(dfs(board,visited,token,0,i,j) == true)	// the other mistake : starting every ( say, is, at ). Should be a set honetly
+						{
+							if(!encount.contains(token))
+							{
+								found.add(token);
+								encount.add(token);
+							}
+						}
+					}
+				}
+			}
+		}
+		return found;
   }
+	
+	// Return of the data type may trip up folks here
+	private static boolean dfs(char[][] board, int[][] visited, String word, int idx, int i, int j)
+	{
+		int m = board.length;
+		int n = board[0].length;
+		if(i < 0 || i >= m || j < 0 || j >= n)
+		{
+			return false;
+		}
+		if(visited[i][j] == 1)
+		{
+			return false;
+		}
+		// base case handling : single len string
+		if(word.charAt(idx) == board[i][j])
+		{
+			if(word.length()-1 == idx)	// Need to now search like this
+			{
+				return true;
+			}
+			else
+			{
+				visited[i][j] = 1;
+				// Need the diagonals now too
+				boolean toTop = dfs(board, visited, word, idx+1, i+1, j);
+				boolean toBottom = dfs(board, visited, word, idx+1, i-1, j);
+				boolean toLeft = dfs(board, visited, word, idx+1, i, j-1);
+				boolean toRight = dfs(board, visited, word, idx+1, i, j+1);
+				
+				boolean topRight = dfs(board, visited, word, idx+1, i-1, j+1);
+				boolean bottomRight = dfs(board, visited, word, idx+1, i+1, j+1);
+				boolean topLeft = dfs(board, visited, word, idx+1, i-1, j-1);
+				boolean bottomLeft = dfs(board, visited, word, idx+1, i+1, j-1);
+				// unset the visited here bfeore the return though
+				visited[i][j] = 0;
+				boolean cardinals = (toTop || toBottom || toLeft || toRight);
+				boolean diagonals = (topRight || bottomRight || topLeft || bottomLeft);
+				boolean res = (cardinals || diagonals);
+				return res;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	
 }
