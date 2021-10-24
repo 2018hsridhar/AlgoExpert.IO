@@ -55,26 +55,41 @@ TIME = O(W*(2*MN)) = O(WMN)
 SPACE = O(H) + O(MN) + O(H) = O(MN) + O(H)
 
 Modularization makes reasoning of Big-O easier as well
+* Clement's solution utilizes a trie underneath, and therefore, their TS reasoning will differ substantially
+
 
 */
 import java.util.*;
 
 class Program 
 {
+	// Try to abstract away data structure conversions : may prove confusing
   public static List<String> boggleBoard(char[][] board, String[] words) 
 	{
-    List<String> found = playBoggle(board,words);
+// 		List<int[]> neighbors = new LinkedList<int[]>();
+// 		neighbors.add(new int[]{1,1});
+// 		neighbors.add(new int[]{2,2});
+// 		neighbors.add(new int[]{3,3});
+// 		neighbors.add(new int[]{4,4});
+// 		for(int[] nx : neighbors)
+// 			System.out.printf("[%d,%d]\n", nx[0], nx[1]);
+		
+		
+		
+		Set<String> foundWords = playBoggle(board,words);
+    List<String> found = new ArrayList<String>();
+		found.addAll(foundWords); // useful method : list.addAll(set)
 		return found;
 	}
 	
 	// Seperation : Discovery of start position from the actual dfs call
-	private static List<String> playBoggle(char[][] board, String[] words)
+	private static Set<String> playBoggle(char[][] board, String[] words)
 	{
-		List<String> found = new ArrayList<String>();
 		int m = board.length;
 		int n = board[0].length;
 		int[][] visited = new int[m][n]; // because IDK if bools initialize to false or true, but ints always 0-init
-		Set<String> encount = new HashSet<String>();
+		Set<String> foundWords = new HashSet<String>();
+		List<String> found = new ArrayList<String>();
 		for(String token : words)
 		{
 			for(int i = 0; i < m; ++i)
@@ -82,20 +97,13 @@ class Program
 				for(int j = 0; j < n; ++j)
 				{
 					if(board[i][j] == token.charAt(0))
-					{
 						if(dfs(board,visited,token,0,i,j) == true)	// the other mistake : starting every ( say, is, at ). Should be a set honetly
-						{
-							if(!encount.contains(token))
-							{
-								found.add(token);
-								encount.add(token);
-							}
-						}
-					}
+							if(!foundWords.contains(token))
+								foundWords.add(token);
 				}
 			}
 		}
-		return found;
+		return foundWords;
   }
 	
 	// Return of the data type may trip up folks here
