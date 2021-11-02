@@ -44,42 +44,46 @@ import java.util.*;
 
 class Program 
 {
-  public static String shortenPath(String path) 
-	{
-		String[] tokens = path.split("/");
-		Stack<String> stk = new Stack<String>();
-		int n = tokens.length;
-		char firstChar = path.charAt(0);
-		for(int i = 0; i < n; ++i)
+	
+	  public static void parseString(Stack<String> stk, String path)
 		{
-			String token = tokens[i];
-			if(token.equals(".."))	// you still have to push this ( even if stk size > 0 : say ../../../ case : check topmost element)
+			String[] tokens = path.split("/");
+			char firstChar = path.charAt(0);
+
+			int n = tokens.length;
+			for(int i = 0; i < n; ++i)
 			{
-				if(stk.size() > 0)
+				String token = tokens[i];
+				if(token.equals(".."))	// you still have to push this ( even if stk size > 0 : say ../../../ case : check topmost element)
 				{
-					String topMostEl = stk.peek();
-					if(topMostEl.equals(".."))
-						stk.push("..");
+					if(stk.size() > 0)
+					{
+						String topMostEl = stk.peek();
+						if(topMostEl.equals(".."))
+							stk.push("..");
+						else
+							stk.pop();
+					}
 					else
-						stk.pop();
+					{
+						if(firstChar != '/')
+							stk.push("..");
+					}
+				}
+				else if ( token.equals("."))
+				{
+					continue;				
 				}
 				else
 				{
-					if(firstChar != '/')
-						stk.push("..");
+					if(!token.equals(""))
+						stk.push(token);
 				}
 			}
-			else if ( token.equals("."))
-			{
-				continue;				
-			}
-			else
-			{
-				if(!token.equals(""))
-					stk.push(token);
-			}
 		}
-		
+
+	public static String constructShortenedPath(Stack<String> stk, String path)
+	{
 		int finalNumTokens = stk.size();
 		if(finalNumTokens == 0)
 			return "/";
@@ -102,7 +106,15 @@ class Program
 		sb.append(resultant);
 		return sb.toString();
 		
-		
-		
   }
+	
+  public static String shortenPath(String path) 
+	{
+		Stack<String> stk = new Stack<String>();
+		parseString(stk, path);
+		String abriged = constructShortenedPath(stk, path);
+		return abriged;
+	}
+	
+
 }
