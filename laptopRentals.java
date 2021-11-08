@@ -212,18 +212,19 @@ class Program {
  public int laptopRentals(ArrayList<ArrayList<Integer>> times)
 	{
 	 	// base case handling
-	 	if(times == null || times.size() == 0)
+	 	if(times == null)
 		{
 			return 0;
 		}
-	 	if(times.size() == 1)
+	 	else if(times.size() <= 1)
 		{
-			return 1;
+			return times.size();
 		}
 		sortIntervals(times);
-		int lowestTime = times.get(0).get(0);
-		int highestTime = times.get(times.size() - 1).get(1);
 	 	int n = times.size();
+	 
+		int lowestTime = times.get(0).get(0);
+		int highestTime = times.get(n - 1).get(1);
 	 	// Endpoint sorting here for minHeap
 	 	// minHeap sorted by endpoint
 	 	PriorityQueue<ArrayList<Integer>> minHeap = new PriorityQueue<ArrayList<Integer>>(new Comparator<ArrayList<Integer>>()
@@ -242,7 +243,7 @@ class Program {
 				}
 		});
 		// int leftMostEndPoint = times.get(0).get(1);
-		int maxRentals = 0;
+		int maxRentals = 0; // your default :-)
 		// [minTime, maxTime] iteration : 
 		// for(int start = lowestTime; start <= highestTime; ++start)	// this will take a lot
 		minHeap.add(times.get(0));
@@ -250,12 +251,13 @@ class Program {
 		while(ptr < n)																																									
 		{
 			// Addition to minHeap tail
+			// System.out.printf("%d\n", minHeap.peek().get(0));
 			ArrayList<Integer> nextInterval = times.get(ptr);
 			int nextIntervalLeft = nextInterval.get(0);
 			if( nextIntervalLeft <=  minHeap.peek().get(0))
 			{
+				System.out.printf("Adding a new interval\n");
 				minHeap.add(times.get(ptr));
-				++ptr;
 			}
 			else
 			{
@@ -263,11 +265,9 @@ class Program {
 				while(minHeap.size() > 0)
 				{
 					ArrayList<Integer> leftMost = minHeap.peek();
-					// if(leftMostEndPoint <= nextIntervalLeft)
 					if(leftMost.get(1) <= nextIntervalLeft)
 					{
 						minHeap.poll();
-						// leftMostEndPoint = minHeap.peek().get(0);
 					}
 					else
 					{
@@ -277,6 +277,7 @@ class Program {
 				// after removals : add the new interval
 				minHeap.add(nextInterval);
 			}
+			++ptr;
 			
 			int curSize = minHeap.size();
 			if(curSize > maxRentals)
@@ -303,20 +304,24 @@ class Program {
 				}
 				else
 				{
-					if(one.get(0) > two.get(0))
+					if(one.get(1) > two.get(1))
 					{
 						return 1;
 					}
-					else if(one.get(0) < two.get(0))
+					else if(one.get(1) < two.get(1))
 					{
 						return -1;
 					}
-					return 0;
+					else
+					{
+						return 0;
+					}
 				}
 			}
 		});
   }
 }
+
 
 
 
