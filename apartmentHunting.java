@@ -32,28 +32,39 @@ import java.util.*;
 
 class Program 
 {
-  public static int apartmentHunting(List<Map<String, Boolean>> blocks, String[] reqs) 
+	
+	public static int apartmentHunting(List<Map<String, Boolean>> blocks, String[] reqs) 
 	{
 		int n = blocks.size();
 		int k = reqs.length;
 		int[][] minimalDists = new int[n][k];
+		initializeMinimalDists(minimalDists, n, k);
+		fillInZeroDistEntries(minimalDists,blocks, n,reqs);
+		fillInAllMinimalDistances(minimalDists, n, k);
+		int minIndex = grabMinIndex(minimalDists, n, k);
+		return minIndex;
+	}
+	
+	private static void initializeMinimalDists(int[][] A, int n, int k)
+	{
 		// Default initialize to Integer.MAX_VALUE here
 		for(int i = 0; i < n; ++i)
 		{
 			for(int j = 0; j < k; ++j)
 			{
-				minimalDists[i][j] = Integer.MAX_VALUE;
+				A[i][j] = Integer.MAX_VALUE;
 			}
 		}
-		
-		
+	}
+	
+	public static void fillInZeroDistEntries(int[][] minimalDists, List<Map<String, Boolean>> blocks, int n, String[] reqs)
+	{
 		for(int i = 0; i < n; ++i)
 		{
 			Map<String,Boolean> blockInfo = blocks.get(i);
 			int j = 0;
 			for(String key : reqs)
 			{
-					// System.out.printf("key = %s\n", key);				
 					if(blockInfo.get(key) == true)
 					{
 						minimalDists[i][j] = 0;
@@ -61,7 +72,10 @@ class Program
 					++j;
 			}
 		}
-		
+	}
+	
+	private static void fillInAllMinimalDistances(int[][] minimalDists, int n, int k)
+	{
 		// Scope for each building req as well ( having precomuted info ahead of time ) 
 		for(int j = 0; j < k; ++j)
 		{
@@ -116,9 +130,13 @@ class Program
 					minimalDists[i][j] = Math.min(minimalDists[i][j], stepsAway);
 				}
 			}
-			
 		}
 		
+
+  }
+	
+	private static int grabMinIndex(int[][] minimalDists, int n, int k)
+	{
 		int globalMaxBlocksToWalk = Integer.MAX_VALUE;
 		int minIndex = -1;
 		for(int i = 0; i < n; ++i)
@@ -134,7 +152,7 @@ class Program
 				minIndex = i;
 			}
 		}
-		
 		return minIndex;
-  }
+	}
+	
 }
