@@ -1,83 +1,10 @@
-What is being asked : Given an array of points plotted in a 2D graph on the XY Cartesian place
-Returns max #-points that a single line can pass through
-Maximize # of collinear point
-
-Input array = points represented by 2 ints { x, y}
-No duplicate points
-Always contains at least one point
-Special case for vertical slots	( "?" -> vertical case, "D" -> default case )
-Slopes have to be doubles as well ( slope of "1|3" )
-
-=====================
--> LEXICOGRAPHIC SORT ( incr(x), incr(y) if x the same )
-Sample Input
-points = [
-  [-2, 6],		< I
-	[-1,12],		< J
-  [0, 4],			{ entry ~ -1, entry ~ -3, entry ~ -3/2 } 
-									^ I					^ J
-  [1, 1],
-  [2, 1],				<- index (i)
-  [2, 2],				<- index (j) where j = i + 1
-  [3, 3],				<- j+1
-  [4, 0],				<- j + 2
-]
-Sample Output
-4 // A line passes through points: [-2, 6], [0, 4], [2, 2], [4, 0].
-===========================
+/*
 
 
 
-[2,2] to [4,0] : slope = -1, [0,4] to [2,2], slope = -1 => extrapolate from that
-[2,2] to [3,3] : slope = +1
-	For earlier candidates : slopes can vary
-	Can have many slopes too. May need more tracking
-	HM : slope -> #-points on the slope
-
-Strategies : 
-Need some concept of slop ( delta_y / delta_x ) 
-Recursive/DP manner
-Order the elements -> 4 dirs for lines
-
-Set the two points for initial exploration : n^2 pairings
-
-[-2,6] and [0,4] : slope = -1
-[0,4] and [1,1] 	: slope = -3
--3 != -1 : do not explore that candidate further
-[0,4] and [2,2] : slope = -1 -> continue checking other solutions for maximal
 
 
-BRUTE FORCE NAIVE COMPLEXITY ( backtracking ) 
-Let N := #-points
-Set of all subsets, P(S) := powerset: |P(S)| = 2^N for a set of N elements
-TIME = O(EXP) -> O(2^N) -> check all of them collinear with one another
-SPACE = O(1) ( EXP ) O(N) ( IMP )
-
-The brute-force approach to solve this problem is to consider every single pair of
-points and to form a line using them. Then, for each line, you determine how many 
-points lie on that line by using the equation of the line you formed and checking 
-if each point's coordinates solve the equation. This solution runs in O(n^3) time; 
-can you come up with a better approach?
-
-				 -----
-Better : O(N^2), O(N), O(NlgN), O(N^2lgN), or O(N^2\sqrt(N))
-
-BETTER ( Bottom-up DP Solution ) 
-TIME = POLY = O(NlogN) + O(N^2) = O(N^2)
-	-> we check ONLY one entry in the hashmaps stored in each DP cell
-SPACE = O(N^2) ( EXP ) O(1) ( IMP ) 
-
-TEST CASES : 
-(A) ( all hoz ) 
-	[[1,1],[2,1],[3,1],[4,1]]
-	=> 4
-(B) ( all vert ) 
-	[[1,1],[1,2],[1,3],[1,4]]
-	=> 4
-(C) ( All scattered )
-(D) [[1,1]]
-	=> 1 point ( default slope ) 
-
+*/
 import java.util.*;
 
 class Program {
@@ -93,13 +20,17 @@ class Program {
 		
 		// Precompute DP array
 		// Precompute hashmaps ( with default values too ) 
-		// Array HMs not valid in JAVA		
+		// Array HMs not valid in JAVA	
+		// Why wouldn't an array of HM be valid in JAVA? This boils down to a contiguous block of mem for pointers to HM?
+		// You just can not have an array of generic type. Leave it at that here.
+		
 		List<HashMap<String,Integer>> numRightPoints = new ArrayList<HashMap<String,Integer>>();
 		for(int i = 0; i < n; ++i)
 		{
+			// So instantiation allocs mem in heap, and returns a pointer to it, in current stack frame under the call
 			HashMap<String,Integer> novel = new HashMap<String,Integer>();
 			novel.put("D", 1);	// "D" => default value
-			numRightPoints.get(i) = novel;
+			numRightPoints.add(i,novel);
 		}
 		
 		// Sort the slope points in dictionary order ( incr(x), then incr(y) for tie-breaker cases of x ) 
@@ -130,16 +61,107 @@ class Program {
 		});
 		
 		// Verify correctness of the sort
-		for(int i = 0; i < n; ++i)
-			System.out.printf("[%d,%d]\n", numPoints[0], numPoints[1]);
+		// for(int i = 0; i < n; ++i)
+		// 	System.out.printf("[%d,%d]\n", numPoints[0], numPoints[1]);
 		
-		
-		
-		
-		
-		
+		// int gcd = gcd(1,111111);
+		// System.out.printf("Gcd = %d\n", gcd);
+		// Is this because strings map to seperate addresses ( versus string values ). Something to exert caution on for sure!
+		// 
+		for(int i = n-1; i >= 0; --i)
+		{
+			int[] pairOne = points[i];		
+			HashMap<String,Integer> ith_pair = numRightPoints.get(i);
+			for(int j = n - 1; j >= i+1; --j)	// Should j be decreasing or increasing here? Do inspect for sure.
+			{
+				int[] pairTwo = points[j];
+				int slope_num = pairTwo[1] - pairOne[1];
+				int slope_den = pairTwo[0] - pairOne[0];
+				// System.out.printf("For (i,j) = (%d,%d)\t Slope (num,den) = (%s,%s)\n", i, j, slope_num, slope_den);
+				HashMap<String,Integer> jth_pair = numRightPoints.get(j);
+				StringBuilder sb = new StringBuilder("");
+				if(slope_den == 0)
+				{
+					sb.append("V");	// The vertical case : use diff character now					
+				}
+				else if ( slope_den != 0)
+				{
+					int gcd = gcd(slope_num, slope_den);
+					if(gcd != 0)
+					{
+						slope_num /= gcd;
+						slope_den /= gcd;
+						sb.append(slope_num);
+						sb.append(":");
+						sb.append(slope_den);
+					}
+					else
+					{
+						sb.append("0");
+					}
+						
+				}
+				// There is a bug here with GCD -> investigate that!
+				// System.out.printf("For (i,j) = (%d,%d)\t Slope (num,den) = (%s,%s)\n", i, j, slope_num, slope_den);
+				String key = sb.toString();
+				if(jth_pair.containsKey(key))
+				{
+					// System.out.printf("Accessing jth key = %s @ j = %d\n", key, j);
+					int jth_pair_val = jth_pair.get(key);
+					// System.out.printf("For key = [%s] @ i,j = [%d,%d] \t jth pair val = [%d]\n", key, i, j, jth_pair_val);
+					// if(ith_pair.containsKey(key) && jth_pair_val > ith_pair.get(key)) ( this seems inaccurate )
+					int newIFreq = jth_pair_val + 1;
+					// System.out.printf("new i freq = %d\n", newIFreq);
+					if(newIFreq >= numPoints)
+					{
+						numPoints = newIFreq;
+					}
+					// System.out.printf("Writing ith key = %s @ i = %d \n", key, i);
+					ith_pair.put(key, newIFreq);	// new point here : add a 1 at least
+					// Is this write operation NOT taking place? HUH?
+				}
+				else
+				{
+					ith_pair.put(key,2);	// new point here : add a 1 at least
+					numPoints = Math.max(numPoints,2);
+				}
+			}
+		}
 		
 		return numPoints;
   }
+	
+	// Know how to code this up from scratch as well too :-(
+	// Wait isn't this based on the more maximal element too? Cuz one divides the other
+	private int gcd(int a, int b)
+	{
+		// Zero case handling 
+		if(a == 0 || b == 0)
+		{
+			return 0;
+		}
+		int max = a;
+		int min = b;
+		if(b > a)
+		{
+			max = b;
+			min = a;
+		}
+		int gcd = min;
+		int rem = max % min;	
+		while(rem != 0)
+		{
+			max = min;
+			min = rem;
+			rem = max % min;
+			if(rem == 0)
+			{
+				gcd = min;
+				break;
+			}
+		}
+		return gcd;
+	}
+	
 }
 
