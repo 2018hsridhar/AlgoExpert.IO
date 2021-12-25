@@ -131,7 +131,7 @@ class Program {
 			{
 				// System.out.printf("Have a gap of currEnd with nxtStart \t ");	// printf need not a %s placeholder, if just printing string directly!
 				// System.out.printf("\n");
-				addToMeetingsList(currEnd, nxtStart, meetingDuration, meetings);
+				addToMeetingsList(trueBounds, currEnd, nxtStart, meetingDuration, meetings);
 				ptr1 = ptr2;
 				ptr2 = ptr1 + 1;
 			}
@@ -157,25 +157,31 @@ class Program {
 		int gapCheckLast = compareTimes(currEnd, trueBounds[1]);
 		if(gapCheckLast != 1)
 		{
-			addToMeetingsList(currEnd, trueBounds[1], meetingDuration, meetings);
+			addToMeetingsList(trueBounds, currEnd, trueBounds[1], meetingDuration, meetings);
 		}				
-		
-		// Now clean up the meetings list
 		
     return meetings;
   }
 	
 	// Method adds all meetings in between the gap provided by the two time intervals here
-	private static void addToMeetingsList(String currEnd, String nxtStart, int meetingDuration, ArrayList<StringMeeting> meetings)
+	// Can we do the bounds check here instead?
+	private static void addToMeetingsList(String[] trueBounds, String currEnd, String nxtStart, int meetingDuration, ArrayList<StringMeeting> meetings)
 	{
+		int[] leftBoundTime = getTime(trueBounds[0]);
+		int[] rightBoundTime = getTime(trueBounds[1]);
 		int[] currEndTime = getTime(currEnd);
 		int[] nxtStartTime = getTime(nxtStart);
 		int currBase = 60*currEndTime[0] + currEndTime[1];
 		int nxtBase = 60*nxtStartTime[0] + nxtStartTime[1];
+		int leftBase = 60*leftBoundTime[0] + leftBoundTime[1];
+		int rightBase = 60*rightBoundTime[0] + rightBoundTime[1];
 		if(currBase + meetingDuration <= nxtBase)
 		{
-				StringMeeting interval = new StringMeeting(currEnd, nxtStart);
-				meetings.add(interval);
+				if(leftBase <= currBase && (currBase + meetingDuration) <= rightBase )
+				{
+					StringMeeting interval = new StringMeeting(currEnd, nxtStart);
+					meetings.add(interval);
+				}
 		}
 	}	
 	
