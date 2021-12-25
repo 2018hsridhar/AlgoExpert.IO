@@ -70,13 +70,22 @@ class Program {
       StringMeeting dailyBounds2,
       int meetingDuration) 
 	{
+		// If no meetings -> just return bounds ( ohhh ) 
+		// I had assumed I always had meetings here
+
 		int m = calendar1.size();
 		int n = calendar2.size();
 		List<StringMeeting> merged = new ArrayList<StringMeeting>();
 		merged.addAll(calendar1);
 		merged.addAll(calendar2);
 		String[] trueBounds = getBounds(dailyBounds1, dailyBounds2);
-		
+  	ArrayList<StringMeeting> meetings = new ArrayList<StringMeeting>();
+		if(calendar1 == null || calendar2 == null || calendar1.size() == 0 || calendar2.size() == 0)
+		{
+			StringMeeting totalMeeting = new StringMeeting(trueBounds[0], trueBounds[1]);
+			meetings.add(totalMeeting);
+			return meetings;
+		}
 		// Sort in lexicographic / dictionary ordering
 		// First by start times -> then, by their earlier end times ( for nested intervals )
 		Collections.sort(merged, new Comparator<StringMeeting>(){
@@ -100,7 +109,6 @@ class Program {
 		});
 		// Print out these meetings now
 		// Confirm again the correctness of sorting the meeting times here. We may have a bad fully overlapping interval above us
-  	ArrayList<StringMeeting> meetings = new ArrayList<StringMeeting>();
 		for(int i = 0; i < merged.size(); ++i)
 		{
 			StringMeeting curr = merged.get(i);
@@ -117,6 +125,14 @@ class Program {
 		int ptr2 = 1;
 		// Now consecutive A[i], A[i+1] comparisons taking place
 		// Two pointer algo, but more like a SLL increment style instead.
+		// Oh you forgot the left bound here too!
+		String currStart = merged.get(0).start;
+		int gapCheckFirst = compareTimes(currStart, trueBounds[0]);
+		if(gapCheckFirst == 1)
+		{
+			addToMeetingsList(trueBounds,trueBounds[0], currStart, meetingDuration, meetings);
+		}			
+		
 		while(ptr1 < merged.size() - 1 && ptr2 < merged.size())
 		{
 			StringMeeting curr = merged.get(ptr1);
@@ -184,46 +200,6 @@ class Program {
 				}
 		}
 	}	
-	
-	// Method adds all meetings in between the gap provided by the two time intervals here
-	private static void addToMeetingsListTwo(String currEnd, String nxtStart, int meetingDuration, ArrayList<StringMeeting> meetings)
-	{
-		int[] currEndTime = getTime(currEnd);
-		int[] nxtStartTime = getTime(nxtStart);
-		int currBase = 60*currEndTime[0] + currEndTime[1];
-		int nxtBase = 60*nxtStartTime[0] + nxtStartTime[1];
-		while(currBase < nxtBase)
-		{
-			int nextEnd = currBase + meetingDuration;
-			if(nextEnd <= nxtBase)
-			{
-				int leftStartMin = currBase % 60;
-				int leftStartHr = currBase / 60;
-				int rightStartMin = nextEnd % 60;
-				int rightStartHr = nextEnd / 60;
-				// Oh shit -> forgetting the string format specifier here ( for leading/trailing zeroes )
-				// Should not matter too much -> integers parse back anyways?
-				String newStart = String.format("%d:%d", leftStartHr, leftStartMin );
-				if(leftStartMin < 9)
-				{
-					newStart = String.format("%d:0%d", leftStartHr, leftStartMin);
-				}
-				String newEnd = String.format("%d:%d", rightStartHr, rightStartMin );
-				if(rightStartMin < 9)
-				{
-					newEnd = String.format("%d:%d", rightStartHr, rightStartMin );
-				}
-				StringMeeting interval = new StringMeeting(newStart, newEnd);
-				meetings.add(interval);
-				currBase = nextEnd;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	
 			
 		private static String[] getBounds(StringMeeting dailyBounds1, StringMeeting dailyBounds2)
 		{
@@ -234,7 +210,7 @@ class Program {
 			String leftTwo = dailyBounds2.start;
 			String rightTwo = dailyBounds2.end;
 			
-			if(compareTimes(leftOne,leftTwo) == 1)
+			if(compareTimes(leftOne,leftTwo) == -1)
 			{
 				bounds[0] = leftTwo;
 			}
