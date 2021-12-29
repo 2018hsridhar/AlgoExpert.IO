@@ -62,7 +62,7 @@ class Program
 				head = node;
 				size++;
 			}
-			else if ( size > 2 ) 
+			else if ( size >= 2 ) 
 			{
 				int nodeVal = node.value;
 				if(containsNodeWithValue(nodeVal))
@@ -120,6 +120,7 @@ class Program
 
     public void setTail(Node node) 
 		{
+			// System.out.println("At set tail");
 			if(size == 0)
 			{
 				head = node;
@@ -134,11 +135,13 @@ class Program
 				tail = node;
 				size++;
 			}
-			else if ( size > 2 ) 
+			else if ( size >= 2 ) 
 			{
+				// System.out.println("At size >= 2");
 				int nodeVal = node.value;
 				if(containsNodeWithValue(nodeVal))
 				{
+					// System.out.printf("Contains node with val = %d\n", nodeVal);
 					// [1] Create a list of value equal nodes
 					List<Node> valEqualNodes = new ArrayList<Node>();
 					Node curr = head;
@@ -185,6 +188,7 @@ class Program
 				else
 				{
 					// Standalone case : easy to handle
+					// System.out.printf("At sstandalon case");
 					tail.next = node;
 					node.prev = tail;
 					node.next = null;
@@ -193,12 +197,38 @@ class Program
 				}
 			}
 		}
+		
+		public void disconnectNode(Node nodeToInsert)
+		{
+			if(nodeToInsert.prev != null || nodeToInsert.next != null)
+			{
+				if(nodeToInsert.prev == null)
+				{
+					nodeToInsert.next = null;
+				}
+				else if ( nodeToInsert.next == null)
+				{
+					nodeToInsert.prev = null;
+				}
+				else
+				{
+					Node before = nodeToInsert.prev;
+					Node after = nodeToInsert.next;
+					before.next = after;
+					after.prev = before;
+					nodeToInsert.next = null;
+					nodeToInsert.prev = null;
+				}
+				size--;
+			}
+		}
 
 		// Perhaps in these other class methods, invoke earlier code too!
 		// Read question carefully here. Yes, "3" can be an already existing node!
 		// Your code did not test for the stand-alone case. Exert caution here
     public void insertBefore(Node node, Node nodeToInsert) 
 		{
+			disconnectNode(nodeToInsert);
 			if(size == 1 || node == head)
 			{
 				setHead(nodeToInsert);
@@ -228,8 +258,14 @@ class Program
 		// Guaranteed existence in the DLL too!
     public void insertAfter(Node node, Node nodeToInsert) 
 		{
+			// Hey "nodeToInsert" is only one node anyways, and "node" is guaranteed to be in list
+			// "nodeToInsert" can be isolated first : just connect that list, based on special cases too
+			// Write up a disconnect method here ( generalize it ) 
+			// System.out.println(node==tail);
+			disconnectNode(nodeToInsert);
 			if (size == 1 ||  node == tail)
 			{
+				// System.out.println("Setting tail");
 				setTail(nodeToInsert);
 			}
 			else if(node == head)
@@ -255,7 +291,30 @@ class Program
 
     public void insertAtPosition(int position, Node nodeToInsert) 
 		{
+			disconnectNode(nodeToInsert);
       // Write your code here.
+			if(position <= 1 || size == 1)
+			{
+				setHead(nodeToInsert);
+			}
+			// We could generalize to position >= size here
+			else if ( position >= size ) // || (size == 1 && position == 2))
+			{
+				setTail(nodeToInsert);
+			}
+			else
+			{
+				Node curr = head;
+				for(int i = 1; i < position; ++i)
+				{
+					if(curr == null)
+					{
+						break;
+					}
+					curr = curr.next;
+				}
+				insertBefore(curr, nodeToInsert);
+			}
     }
 
 		// O(N) Time, O(1) Space for geting nodes with values
@@ -275,7 +334,7 @@ class Program
 			for(Node x : nodeWithVal)
 			{
 				remove(x);
-			}|
+			}
     }
 
 		// Special case checking needed too?
@@ -293,6 +352,7 @@ class Program
 					{
 						head = null;
 						tail = null;
+						break;
 					}
 					else if(curr.prev == null) // equals head
 					{
@@ -314,10 +374,7 @@ class Program
 						after.prev = before;
 					}
 				}
-				else
-				{
-					curr = curr.next;
-				}
+				curr = curr.next;
 			}
 			size--;
     }
@@ -329,12 +386,12 @@ class Program
 			Node curr = head;
 			while(curr != null)
 			{
-				curr = curr.next;
 				if(curr.value == value)
 				{
 					hasNodeWithVal = true;
 					break;
 				}
+				curr = curr.next;
 			}
       return hasNodeWithVal;
     }
