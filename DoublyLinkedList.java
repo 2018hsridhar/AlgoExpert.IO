@@ -17,10 +17,6 @@ SPACE = O()
 TEST CASES
 (A) [1,2,3,3,4,3] setHead(3)
 	=> [3,3,3,1,2,4]
-(B)
-(C)
-(D)
-(E)
 
 Maybe track a hash set or a hashmap : but seems extra memory footprint here.
 containsNodeWithValue() -> stand-alone node determiner.
@@ -142,8 +138,9 @@ class Program
 			}
 			else
 			{
+				// System.out.printf("Doing a middle insertion\n");
 				Node before = node.prev;
-				Node after = node.next;
+				Node after = node;
 				before.next = nodeToInsert;
 				nodeToInsert.prev = before;
 				after.prev = nodeToInsert;
@@ -179,7 +176,7 @@ class Program
 			else
 			{
 				// Clearly, we are storing null addresses here : connections not establishing right?
-				Node before = node.prev;
+				Node before = node;
 				Node after = node.next;
 				before.next = nodeToInsert;
 				nodeToInsert.prev = before;
@@ -190,18 +187,13 @@ class Program
 		}
 
 		// Final method to correct
+		// Disconnecting will have an impact here -> take close note of that as well!
+		
     public void insertAtPosition(int position, Node nodeToInsert) 
-		{
-			disconnectNode(nodeToInsert);
-      // Write your code here.
-			if(position <= 1 || size == 1)
+		{			
+			if(size == 1)
 			{
 				setHead(nodeToInsert);
-			}
-			// We could generalize to position >= size here
-			else if ( position >= size ) // || (size == 1 && position == 2))
-			{
-				setTail(nodeToInsert);
 			}
 			else
 			{
@@ -209,15 +201,12 @@ class Program
 				for(int i = 1; i < position; ++i)
 				{
 					if(curr == null)
-					{
 						break;
-					}
 					curr = curr.next;
 				}
 				insertBefore(curr, nodeToInsert);
-			}
-    }
-
+    	}
+		}
 		// O(N) Time, O(1) Space for geting nodes with values
 		// O(N) Time, O(1) Space for each seperate removal -> yeah it could be better, but whatever for now
     public void removeNodesWithValue(int value) 
