@@ -42,175 +42,70 @@ class Program
     public Node tail;
 		int size = 0;
 
-		// setHead(3) but 3 repeated multiple times? Is it the first 3, or all 3's here then?
-		// Maybe collect a list of them instead? 
-		// Size check needed too!
-		// Make sure to set the HEADS and TAILS correctly!
     public void setHead(Node node) 
 		{
+			disconnectNode(node);
 			if(size == 0)
 			{
-				head = node;
 				tail = node;
-				size++;
 			}
 			else if ( size == 1)
 			{
 				node.next = head;
 				node.prev = null;
 				head.prev = node;
-				head = node;
-				size++;
 			}
 			else if ( size >= 2 ) 
 			{
-				int nodeVal = node.value;
-				if(containsNodeWithValue(nodeVal))
-				{
-					// [1] Create a list of value equal nodes
-					List<Node> valEqualNodes = new ArrayList<Node>();
-					Node curr = head;
-					while(curr != null)
-					{
-						if(curr.value == nodeVal)
-						{
-							valEqualNodes.add(curr);
-						}
-						curr = curr.next;
-					}
-
-					// [2] Perform pointer manipulations quickly
-					// Just handle the base cases ( e.g. node equals head OR node equals tail )
-					for(Node x : valEqualNodes)
-					{
-						if(x.prev == null) // head of DLL
-						{
-							continue;
-						}
-						else if ( x.next == null) // tail of DLL
-						{
-							Node prev = x.prev;
-							prev.next = null;
-							x.prev = null;
-							x.next = head;
-							head = x;
-						}
-						else	// middle of DLL
-						{
-							Node before = x.prev;
-							Node after = x.next;
-							before.next = after;
-							after.prev = before;
-							x.prev = null;
-							x.next = head;
-							head = x;
-						}
-					}
-				}
-				else
-				{
-					// Standalone case : easy to handle
-					node.next = head;
-					node.prev = null;
-					head.prev = node;
-					++size;
-				}
+				node.next = head;
+				node.prev = null;
+				head.prev = node;
 			}
+			head = node;
+			size++;
     }
 
     public void setTail(Node node) 
 		{
-			// System.out.println("At set tail");
+			disconnectNode(node);
 			if(size == 0)
 			{
 				head = node;
-				tail = node;
-				size++;
 			}
 			else if ( size == 1)
 			{
 				tail.next = node;
 				node.prev = head;
 				node.next = null;
-				tail = node;
-				size++;
 			}
 			else if ( size >= 2 ) 
 			{
-				// System.out.println("At size >= 2");
-				int nodeVal = node.value;
-				if(containsNodeWithValue(nodeVal))
-				{
-					// System.out.printf("Contains node with val = %d\n", nodeVal);
-					// [1] Create a list of value equal nodes
-					List<Node> valEqualNodes = new ArrayList<Node>();
-					Node curr = head;
-					while(curr != null)
-					{
-						if(curr.value == nodeVal)
-						{
-							valEqualNodes.add(curr);
-						}
-						curr = curr.next;
-					}
-
-					// [2] Perform pointer manipulations quickly
-					// Just handle the base cases ( e.g. node equals head OR node equals tail )
-					for(Node x : valEqualNodes)
-					{
-						if(x.next == null) // tail of DLL
-						{
-							continue;
-						}
-						else if ( x.prev == null) // head of DLL
-						{
-							Node newHead = x.next;
-							tail.next = x;
-							x.prev = tail;
-							x.next = null;
-							head = newHead;
-						}
-						else	// middle of DLL
-						{
-							Node before = x.prev;
-							Node after = x.next;
-							before.next = after;
-							after.prev = before;
-							
-							
-							tail.next = x;
-							x.prev = tail;
-							x.next = null;
-							tail = x;
-						}
-					}
-				}
-				else
-				{
-					// Standalone case : easy to handle
-					// System.out.printf("At sstandalon case");
-					tail.next = node;
-					node.prev = tail;
-					node.next = null;
-					tail = node;
-					++size;
-				}
+				tail.next = node;
+				node.prev = tail;
+				node.next = null;
 			}
+			tail = node;
+			size++;
 		}
 		
+		// Manipulate HEAD and TAIL pointers here
 		public void disconnectNode(Node nodeToInsert)
 		{
 			if(nodeToInsert.prev != null || nodeToInsert.next != null)
 			{
 				if(nodeToInsert.prev == null)
 				{
+					head = nodeToInsert.next;
+					head.prev = null;
 					nodeToInsert.next = null;
 				}
 				else if ( nodeToInsert.next == null)
 				{
+					tail = nodeToInsert.prev;
+					tail.next = null;
 					nodeToInsert.prev = null;
 				}
-				else
+				else	// HEAD,TAIL do not change here
 				{
 					Node before = nodeToInsert.prev;
 					Node after = nodeToInsert.next;
@@ -235,12 +130,15 @@ class Program
 			}
 			else if ( node == tail)
 			{
-				Node earlierTail = tail;
+				// System.out.printf("Size = %d \t tail = %d \n", size, tail.value);
 				Node before = tail.prev;
-				before.next = null;
-				tail.prev = null;
-				setTail(nodeToInsert);
-				setTail(earlierTail);
+				before.next = nodeToInsert;
+				nodeToInsert.prev = before;
+				
+				nodeToInsert.next = tail;
+				tail.prev = nodeToInsert;
+				
+				size++;
 			}
 			else
 			{
@@ -265,20 +163,22 @@ class Program
 			disconnectNode(nodeToInsert);
 			if (size == 1 ||  node == tail)
 			{
-				// System.out.println("Setting tail");
 				setTail(nodeToInsert);
 			}
-			else if(node == head)
+			// Ran into this case, as 2 now the head of the SLL
+			// But reality is that you are in the middle here :-O
+			else if(node == head)	
 			{
-				Node earlierHead = head;
-				Node after = head.next;
-				after.prev = null;
-				head.next = null;
-				setHead(nodeToInsert);
-				setHead(earlierHead);
+				Node follow = head.next;
+				nodeToInsert.next = follow;
+				follow.prev = nodeToInsert;
+				head.next = nodeToInsert;
+				nodeToInsert.prev = head;
+				size++;
 			}
 			else
 			{
+				// Clearly, we are storing null addresses here : connections not establishing right?
 				Node before = node.prev;
 				Node after = node.next;
 				before.next = nodeToInsert;
@@ -289,6 +189,7 @@ class Program
 			}
 		}
 
+		// Final method to correct
     public void insertAtPosition(int position, Node nodeToInsert) 
 		{
 			disconnectNode(nodeToInsert);
@@ -341,40 +242,33 @@ class Program
 		// Is not just a values removal : addresses are unique and are more specific than values
 		// Could have wrote logic with sentinels => but extra space here?
 		// O(N) Time, O(1) Space, Iterative
+		// Why are we iterative here exactly, is a bit confusing, when we have the stinking node !!
+		
     public void remove(Node node) 
 		{
-			Node curr = head;
-			while(curr != null)
+			if(node.prev == null && node.next == null)
 			{
-				if(curr == node) // hit node : check cases now
-				{
-					if(curr.prev == null && curr.next == null)
-					{
-						head = null;
-						tail = null;
-						break;
-					}
-					else if(curr.prev == null) // equals head
-					{
-						Node follow = curr.next;
-						follow.prev = null;
-						head = follow;
-					}
-					else if(curr.next == null) // equals tail
-					{
-						Node prev = curr;
-						prev.next = null;
-						tail = prev;
-					}
-					else // in-between
-					{
-						Node before = curr.prev;
-						Node after = curr.next;
-						before.next = after;
-						after.prev = before;
-					}
-				}
-				curr = curr.next;
+				head = null;
+				tail = null;
+			}
+			else if(node.prev == null && node.next != null) // equals head
+			{
+				Node follow = node.next;
+				follow.prev = null;
+				head = follow;
+			}
+			else if(node.prev != null && node.next == null) // equals tail
+			{
+				Node prev = node.prev;
+				prev.next = null;
+				tail = prev;
+			}
+			else // in-between
+			{
+				Node before = node.prev;
+				Node after = node.next;
+				before.next = after;
+				after.prev = before;
 			}
 			size--;
     }
