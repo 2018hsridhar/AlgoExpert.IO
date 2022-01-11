@@ -1,3 +1,4 @@
+
 Clarifications
 - Input fits in RAM
 - All integers
@@ -101,7 +102,16 @@ Heap ops :
   isEmpty : "use size underneath "
 	add : 
 	
-	
+
+Maxheap remains on the left-hand side here
+[9,8,6,2,1,5,3]
+							|
+[3,8,6,2,1,5,9] 
+	          |
+
+
+
+
 PSEUDOCODE : 
 
 	n = len(array)
@@ -179,46 +189,90 @@ class Program {
 		if(A == null || A.length == 0)
 			return new int[]{};
 		
+		/*
+		  [1] Max Heap construction : based on child->parent swaps EVERYWHERE!
+		  [2] Like heap sort to making smaller and smaller heaps each time, after extraction of the topmost element too
+		  [3] Incurs implicit rebalancing steps as well
+		*/
 		int n = A.length;
 		for(int i = 1; i < n; ++i)
 		{
-			while(A[i] > A[i/2] && i > 0)	// comparison in the while loop
+			int j = i;
+			while(j > 0)	// Special case handle for j = 1 though? 
 			{
-				swp(A,i,i/2);
-				i = i/2;
-			}
-		}
-		
-		// for(int x : A)
-			// System.out.printf("%d,", x);
-		// System.out.println();
-		
-		int len = n-1;
-		for(int i = 0; i < n; ++i)			// Possible bug too
-		{
-			swp(A,0,len);
-			len -= 1;
-			int k = 0;
-			while(k*2 < len)
-			{
-				if(A[k] < A[k*2])
+				if(j % 2 == 0 && A[(j-2)/2] < A[j])	// comparison in the while loop
 				{
-					swp(A,k,k*2);
-					k = k*2;
+					swp(A,j,(j-2)/2);
+					j = (j-2)/2;	// same loop var use OMG
 				}
-				if(A[k] < A[k*2 + 1])
+				else if(j % 2 == 1 && A[(j-1)/2] < A[j])	// comparison in the while loop
 				{
-					swp(A,k,k*2 + 1);
-					k = k*2 + 1;
+					swp(A,j,(j-1)/2);
+					j = (j-1)/2;	// same loop var use OMG
 				}
 				else
 				{
 					break;
 				}
 			}
-			for(int x : A)
-				System.out.printf("%d,", x);
-			System.out.println();
+		}
+		
+		
+		
+		//		     4             10 ( indices 4, 4*2 + 2 :: off ) 
+		// 9,8,5,4,1,4,1,0,-1,-2,3,-3,-3,-3,-7,-4,-9,-9,-7,-4,-9,-7,
+		// Heap construction here : DEFINITELY BUGGY -> please fix again!
+			
+		// for(int x : A)
+		// 	System.out.printf("%d,", x);
+		// System.out.println();
+		
+		int len = n-1;
+		for(int i = 0; i < n; ++i)			// Possible bug too
+		{
+
+			swp(A,0,len);	// Wait is this correct
+			
+				
+			// Bounds ref can not be right here either
+			// 0 -> (1,2) : 2*k+1, 2*k + 2  ( exception case ) 
+			// 1 -> (3,4) : 
+			// 2 -> (5,6) :
+			len -= 1;
+			int k = 0;
+			// Case : if left than both left and right -> must take the max of both here!!!! 
+			// Recursive swapping ( level-by-level makes most sense ) 
+			while(k < len)
+			{
+				// I see -> not evaluating a max properly here
+				// You need to swap with the right children ( the maximal child -> greedily ) : 2->{3,5} on {left,right} here!
+				if((2*k)+1 <= len && (2*k)+2 <= len && A[k] < A[(2*k)+1] && A[k] < A[(2*k)+2])
+				{
+					// check which child lower : the left or the right
+					int lower = 2*k + 1;
+					if(A[(2*k)+2] > A[lower])
+					{
+						lower = 2*k + 2;
+					}
+					swp(A,k,lower);
+					k = lower;
+				}
+				// Handle one-child cases as well too!
+				else if((2*k)+1 <= len && A[k] < A[(2*k)+1])
+				{
+					swp(A,k,(2*k)+1);
+					k = (2*k)+1;
+				}
+				else if((2*k)+2 <= len && A[k] < A[(2*k)+2])
+				{
+					swp(A,k,(2*k)+2);
+					k = (2*k)+2;
+				}
+				else
+				{
+					break;
+				}
+			}
 		}		
 		
 		return A;
@@ -232,4 +286,3 @@ class Program {
 	}
 	
 }
-
