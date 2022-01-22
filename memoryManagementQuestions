@@ -1,0 +1,37 @@
+Integer counter -> another way?
+
+ 1111 ( track the carrying, compute the digit sums )
+  9999
+ +	 1
+ _____	
+ 10000
+ 
+ int a = 1;
+ a = a + 1;	// no new memory allocated
+ 							 0000		 1 1
+ int a = 7 ; 0b0000....0111		<- register/ASM
+			+1		 0b0000....0001	( 32-bit data type ? )
+						_______________
+											 1000
+Are there registers here under operation
+No need to write new memory for sure :-)
+			
+			
+StringBuilder() classes = work around
+String res = "";
+
+res = res + newstr;
+
+
+res = "abc"
+	['a','b','c','\0'] <- c-style string ( fixed array length ) ( clearing this memory ) 
+	  ^
+		P!
+	delete()
+	
+	Make a new array 
+	['a','b','c','d','\0']
+	malloc()
+
+Due to fixed-len arrays, new memory must be written as well.
+
