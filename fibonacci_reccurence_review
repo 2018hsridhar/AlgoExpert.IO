@@ -1,0 +1,84 @@
+Write whatever you want here.
+
+
+N = N-1 + N-2;
+
+
+1 0 
+2 1 
+n = n-1 + n-2;
+
+
+F(0) = 0;
+F(1) = 1
+
+n = 2
+1 // 0, 1
+F(2) = F(1) + F(0)
+
+n = 6
+5 // 0, 1, 1, 2, 3, 5
+F(6) = F(5) + F(4) = 3 + 2
+
+Recursively -> get to the DP solution
+
+if(n>2) return n-1 + n-2;				 5
+															/    \
+														4			  3
+													 / \     /  \
+													3   2   2    1
+											   / \./ \  / \  
+												2   11	0 1 0
+											 /       
+											1   
+								
+								
+								level of n-1
+								
+								n
+								
+								
+-> binary tree
+-> for each problem, we must solve two subproblems
+-> Recurrence relation
+
+O(number_problems_solve_per_node_at_level ^ max_number_levels)
+Length of longest path from the root, to a leaf?
+Given an input number
+
+n*2
+
+Small test cases ( n = 3/4 ) -> see if you can count
+
+complex
+Time: O(2^n) EXP time ( base ^ power ) : not POLY
+Space: O(n) ( call stk max depth ) O(1) ( aux ) 
+
+
+
+Exponents : 2^4 = 16
+	2 := base
+	4 := exponent ( superscript - smaller # written on top right )
+	2^4 := power
+	
+	A power is a number written as a base number with an exponent
+
+base ^ exponent
+
+n==6
+6^6
+
+	6^6 = 6 ^ 6 = 6*6*6*6*6*6 = 36*36*36 = 46656
+
+
+
+
+
+
+
+
+
+
+
+
+
