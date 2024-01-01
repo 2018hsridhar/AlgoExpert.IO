@@ -1,0 +1,67 @@
+/* Delete this ruleset  */
+/* No elements here have an ID */
+
+nav {
+  width: 100%;
+/*   Note use of flexbox here */
+  display: flex;
+  background-color: #6e072d;
+  color: white;
+  font-size: 18px;
+}
+
+/* First and second ones  */
+ul {
+/*   Remove browser default settings with margin-padding set to 0 */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style-type: none;
+}
+
+
+ul:nth-child(1) {
+  float: left;
+}
+
+ul:nth-child(2) {
+  float: right;
+} 
+
+
+/* Li must have inline display for horizontal bar  */
+/* remove line breaks from block els */
+/*   How to get the font size */
+/*  Isn't `em` close to the font-size? */
+li {
+  padding-top: em;
+  padding-right: 1.5 * em;
+  padding-bottom: em;
+  padding-left: 1.5 * em;
+  border-right: solid white 2px;
+  list-style-type: none; 
+  display: inline;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Not really an override here sadly  */
+ul:nth-child(1)>li:nth-child(3){
+  border-right: None;
+  border-bottom: None;
+}
+
+/* Not really an override here sadly  */
+ul:nth-child(2)>li:nth-child(1){
+  border-left: None;
+  border-bottom: None;
+}
+
+
+
+/* On hover class selector  */
+li:hover {
+  background-color: #b90e4d;
+  cursor: pointer;
+}
+
