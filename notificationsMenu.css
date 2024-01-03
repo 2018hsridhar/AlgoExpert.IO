@@ -1,0 +1,102 @@
+/*
+Goal : to style the HTML markup of the notification menu
+Use CSS Grid to solve this problem
+Notifications menu HTML file markup
+
+https://stackoverflow.com/questions/9769587/set-div-to-have-its-siblings-width
+Investigate flexbox solutions
+
+2 sibling DIV widths match each other
+*/
+
+/* The overall wrapper container  */
+#wrapper {
+  width: 280px;
+  /*   top-right-bottom-left padding */
+  padding: 10px 10px 10px 10px; /* total width 300    */
+  border-radius: 10px;
+  background-color: lightgrey;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The notifications heading  */
+/* Margin as way to create spacing : padding within a border */
+h1 {
+  text-align: center;
+  text-decoration: underline;
+  padding: 0px 0px 0px 0px;
+  margin-bottom: 10px;
+  /* Remove all other default margin */
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+/* The notifications  */
+/* 2 columns -> {img,p} -> elements */
+.notification {
+/*   10 px spacing : notification and wrapper edge */
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 0px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: white;
+  display: grid;
+  grid-template-columns: [left] 1fr [right] 1fr; /* repeat(2, 1fr); */
+  grid-column-gap: 10px;
+}
+
+/* The notification images : are perfect circles  */
+img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid black;
+}
+
+/* Notification paragraph ( image right ) */
+/* on the right of images */
+.notification > p {
+  margin-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 0px;
+  text-align: start;
+}
+
+/* Text in user space */
+.user {
+  font-weight: bold;
+}
+
+/* Time class span */
+/* font weight is NOT italics font */
+.time {
+  /* bottom right of grid */
+  font-weight: normal;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* View more button  */
+/* 10px below bottom notification */
+button {
+  margin: auto;
+  margin-top: 10px;
+/*   Same width as the notifications */
+  width: 100%;
+  /*   Center button horizontally ( use flexbox ) */
+  align-items : center;
+/*   Verticallly center */
+  justify-content: center;
+  font-size: 16px;
+  border-radius: 10px;
+  /* shorthand properties 4 dirs */
+  padding: 10px 10px 10px 10x;
+  background-color: #02203c;
+  color: white;
+}
